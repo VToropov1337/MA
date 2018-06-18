@@ -21,16 +21,19 @@ WHERE tasks.wave = 'zhal_chto_ne_na_m54_auchan_zs_may18' \
 AND tasks.project_id = 2 \
 AND reports.state = 'accepted' \
 AND reports.barcode != '' \
-;")
+LIMIT 3;")
 
 arr = list()
-hh = dict()
+
 
 #иду по объекту и заполняю хэш hh значениями, после чего помещаю в массив.
 for i in cursor:
+    hh = dict()
     hh['url'] = i[0]
     hh['barcode'] = i[1]
     arr.append(hh)
+
+print(arr)
 
 
 
