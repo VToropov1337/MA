@@ -1,5 +1,6 @@
 import psycopg2
 from openpyxl import Workbook
+import json
 
 #устанавливаю соединение с бд
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
@@ -21,7 +22,7 @@ WHERE tasks.wave = 'zhal_chto_ne_na_m54_auchan_zs_may18' \
 AND tasks.project_id = 2 \
 AND reports.state = 'accepted' \
 AND reports.barcode != '' \
-LIMIT 3;")
+;")
 
 arr = list()
 
@@ -33,10 +34,10 @@ for i in cursor:
     hh['barcode'] = i[1]
     arr.append(hh)
 
-print(arr)
+
 
 
 
 #записываю в файл
-with open('photo_price.txt', 'w') as f:
-    f.write(str(arr))
+with open('photo_price.json', 'w') as f:
+    json.dump(arr, f)
