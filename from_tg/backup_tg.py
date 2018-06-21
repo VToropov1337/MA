@@ -40,7 +40,7 @@ client.get_dialogs()
 # users = client.iter_participants(chat_id)
 
 
-словарь уникальных узеров по телеграм-ид
+#словарь уникальных узеров по телеграм-ид
 users_hash = dict()
 for user in users:
     if user.last_name == None:
@@ -49,8 +49,8 @@ for user in users:
         users_hash[user.id] = str(user.first_name) + ' ' + str(user.last_name)
 
 
-#получить все сообщения в чате / если есть медиа - скачать
-msg = client.get_messages(chat_id)
+#получить все сообщения в чате / если есть медиа - скачать !!! Важно. Обязательно поставить лимит, иначе выгрузит только последнее сообщение
+msg = client.get_messages(chat_id,limit=100000)
 
 #создаем массив для записи словаря в него
 arr_data = list()
