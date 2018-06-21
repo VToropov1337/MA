@@ -10,7 +10,7 @@ chat_id = ***
 
 
 
-# Созданию сущности клиент и соединение с апи тг
+# Созданию сущность клиент и соединение с апи тг
 client = TelegramClient('session_name', api_id, api_hash)
 client.connect()
 
@@ -78,7 +78,7 @@ for i in msg:
     arr_data.append(json_data)
 
 #Создаем csv объект записи
-users_data = open('path', 'w')
+users_data = open('path_to_file', 'w')
 writer = csv.writer(users_data,delimiter='|')
 count = 0
 for i in arr_data:
