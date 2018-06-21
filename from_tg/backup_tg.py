@@ -22,7 +22,7 @@ if not client.is_user_authorized():
 #Посчитать кол-во сообщений в чате
 # quantity_of_msgs = client.iter_messages(chat_id)
 # count_messages = list()
-# for i in q:
+# for i in quantity_of_msgs:
 #     count_messages.append(i)
 #
 # print(len(count_messages))
