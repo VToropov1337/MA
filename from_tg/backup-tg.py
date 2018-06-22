@@ -62,7 +62,7 @@ for i in msg:
         print("count_action: {}".format(count_action))
     else:
         if i.media:
-            client.download_media(i.media, file='/Users/millionagents/Desktop/MA/telegram/images/{}/{}'.format(i.from_id,i.id))
+            client.download_media(i.media, file='path/media/{}/{}'.format(i.from_id,i.id))
             json_data["type of message"] = "media" #media file
         else:
             json_data["type of message"] = "text"
@@ -87,7 +87,7 @@ for i in msg:
         arr_data.append(json_data)
 
 #Создаем csv объект записи
-users_data = open('/Users/millionagents/Desktop/MA/telegram/модераторы_m54.csv', 'w')
+users_data = open('path.csv', 'w')
 writer = csv.writer(users_data,delimiter='|')
 count = 0
 for i in arr_data:
