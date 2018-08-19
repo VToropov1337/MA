@@ -16,7 +16,6 @@ for i in arr:
 
     book = Workbook()
     sheet = book.active
-    base = list()
 
     for elem in cursor:
         print(elem)
