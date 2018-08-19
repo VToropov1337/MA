@@ -9,7 +9,7 @@ from openpyxl import Workbook
 
 
 
-connect = psycopg2.connect(database='***', user='psqlreader', host='***', port='***', password='***')
+connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
 cursor = connect.cursor()
 
 cursor.execute(
