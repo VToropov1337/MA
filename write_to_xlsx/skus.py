@@ -4,7 +4,6 @@ from openpyxl import Workbook
 arr = ['equal','equal_with_analog','analog_with_recalculation','analog_without_recalculation']
 
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
-counter = 1
 
 
 for i in arr:
@@ -23,13 +22,11 @@ for i in arr:
 
 
     for j in range(len(base)):
-
         sheet.cell(row=1+j, column=1).value = base[j][0]
         sheet.cell(row=1+j, column=2).value = base[j][1]
         sheet.cell(row=1+j, column=3).value = base[j][2]
         sheet.cell(row=1+j, column=4).value = base[j][3]
         sheet.cell(row=1+j, column=5).value = base[j][4]
-        counter += 1 
 
     book.save(('write_skus_{}.xlsx').format(i))
 
