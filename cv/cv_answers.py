@@ -4,6 +4,7 @@ import csv
 
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
 cursor = connect.cursor()
+
 cursor.execute("SELECT reports.metro_price,cv_responses.response,geo_objects.title \
 FROM ma_metro.reports \
 JOIN ma_metro.tasks \
@@ -15,14 +16,20 @@ JOIN ma_metro.conveyor_jobs \
 JOIN ma_metro.cv_responses \
     ON cv_responses.target_id = conveyor_jobs.id \
 WHERE reports.state = 'accepted' \
-    AND conveyor_jobs.wave = '***' \
+    AND tasks.wave = 'os_auchan_42-18' \
     AND cv_responses.state = 'completed' \
-    AND cv_responses.req_type = 'get_bulk_result_detect_classify_images';")
+    AND cv_responses.req_type = 'get_bulk_result_detect_classify_images'; \
+    ")
+
 
 data = list()
+
 for i in cursor:
-    if i[0]:
-        data.append(i)
+    data.append(i)
+
+connect.close()
+
+print(len(data))
 
 
 book = Workbook()
@@ -35,152 +42,264 @@ sheet['E1'] = "url"
 
 
 
-
 count = 0
 for i in data:
     count += 1
-    print(count)
-    if i[1]['images'][0]['tags'] == []:
-        url = (i[1]['images'][0]['url'])
-        sheet.cell(row=count+1, column=5).value = url
-        sheet.cell(row=count+1, column=2).value = 'Нет ответа'
-        sheet.cell(row=count+1, column=4).value = 0
-        sheet.cell(row=count+1, column=1).value = i[0]
-        sheet.cell(row=count+1, column=3).value = i[2]
-
+    url = (i[1]['images'][0]['url'])
+    # print(i[1]['images'][0]['tags'][0]['price_rub']['text'])
+    if len(i[1]['images'][0]['tags']) == 0:
+        # print('НЕТ ОТВЕТА ОТ СИВИ')
+        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+        sheet.cell(row=count + 1, column=2).value = 'НЕТ ОТВЕТА ОТ СИВИ'
+        sheet.cell(row=count + 1, column=4).value = 0
+        sheet.cell(row=count + 1, column=1).value = i[0]
+        sheet.cell(row=count + 1, column=3).value = i[2]
     elif len(i[1]['images'][0]['tags']) == 1:
-            if i[1]['images'][0]['tags'][0]['price_rub'] != None and i[1]['images'][0]['tags'][0]['price_kop'] != None:
-                r = str(i[1]['images'][0]['tags'][0]['price_rub']['text']).strip()
-                k = str(i[1]['images'][0]['tags'][0]['price_kop']['text']).strip()
-                p = str(r+'.'+k).strip()
-                p = p.strip()
-                # sheet.cell(row=count+1, column=1).value = i[0]
-                # sheet.cell(row=count+1, column=2).value = p
-                # sheet.cell(row=count+1, column=3).value = i[2]
-                if i[0] == float(p):
-                    #print('YES')
-                    sheet.cell(row=count+1, column=4).value = 1
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = p
-                    sheet.cell(row=count+1, column=3).value = i[2]
+        if i[1]['images'][0]['tags'][0]['price_rub']:
+            if i[1]['images'][0]['tags'][0]['price_rub']['text'] != '':
+                if i[1]['images'][0]['tags'][0]['price_kop']:
+                    if i[1]['images'][0]['tags'][0]['price_kop']['text'] != '':
+                        if i[0] == float(i[1]['images'][0]['tags'][0]['price_rub']['text'] + '.'\
+                              + i[1]['images'][0]['tags'][0]['price_kop']['text']):
+                            # print('СОВПАЛО!')
+                            # записываем 1 в сравнение
+                            sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][0]['price_rub']['text'] + '.'\
+                              + i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        else:
+                            # print(i[1]['images'][0]['tags'][0]['price_rub']['text'] + '.'\
+                            # + i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=2).value = str(
+                                i[1]['images'][0]['tags'][0]['price_rub']['text'] + '.' \
+                                + i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=4).value = 0
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    else:
+                        if i[0] == int(i[1]['images'][0]['tags'][0]['price_rub']['text']):
+                        # print(i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                            sheet.cell(row=count + 1, column=2).value = str(\
+                                i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        else:
+                            sheet.cell(row=count + 1, column=2).value = str(\
+                            i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                            sheet.cell(row=count + 1, column=4).value = 0
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
                 else:
-                    #print("NO")
-                    url = (i[1]['images'][0]['url'])
-                    sheet.cell(row=count+1, column=4).value = 0
-                    sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = p
-                    sheet.cell(row=count+1, column=3).value = i[2]
-            elif i[1]['images'][0]['tags'][0]['price_rub'] != None and i[1]['images'][0]['tags'][0]['price_rub']['text'] != '' and i[1]['images'][0]['tags'][0]['price_kop'] == None:
-                r = str(i[1]['images'][0]['tags'][0]['price_rub']['text']).strip()
-                if i[0] == float(r):
-                    sheet.cell(row=count+1, column=4).value = 1
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = r
-                    sheet.cell(row=count+1, column=3).value = i[2]
-                else:
-                    url = (i[1]['images'][0]['url'])
-                    sheet.cell(row=count+1, column=4).value = 0
-                    sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = r
-                    sheet.cell(row=count+1, column=3).value = i[2]
-            elif i[1]['images'][0]['tags'][0]['price_rub'] == None and i[1]['images'][0]['tags'][0]['price_kop'] != None:
-                url = (i[1]['images'][0]['url'])
-                sheet.cell(row=count+1, column=4).value = 0
-                sheet.cell(row=count+1, column=5).value = url
-                sheet.cell(row=count+1, column=1).value = i[0]
-                sheet.cell(row=count+1, column=2).value = str(i[1]['images'][0]['tags'][0]['price_kop']['text'])
-                sheet.cell(row=count+1, column=3).value = i[2]
-                #sheet.cell(row=count+1, column=6).value = 'только копейки'
+                    # print(i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                    if i[0] == int(i[1]['images'][0]['tags'][0]['price_rub']['text']):
+                    # print(i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                        sheet.cell(row=count + 1, column=2).value = str(\
+                                i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                        sheet.cell(row=count + 1, column=4).value = 1
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    else:
+                        sheet.cell(row=count + 1, column=2).value = str(\
+                        i[1]['images'][0]['tags'][0]['price_rub']['text'])
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+
             else:
-                url = (i[1]['images'][0]['url'])
-                sheet.cell(row=count+1, column=4).value = 0
-                sheet.cell(row=count+1, column=5).value = url
-                sheet.cell(row=count+1, column=1).value = i[0]
-                sheet.cell(row=count+1, column=2).value = str(i[1]['images'][0]['tags'][0])
-                sheet.cell(row=count+1, column=3).value = i[2]
-                #sheet.cell(row=count+1, column=6).value = 'нет цен вообще'
+                if i[1]['images'][0]['tags'][0]['price_kop']:
+                    if i[1]['images'][0]['tags'][0]['price_kop']['text'] != '':
+                        # print('0' + '.' + i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                        if i[0] == float('0' + str(i[1]['images'][0]['tags'][0]['price_kop']['text'])):
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                        else:
+                            sheet.cell(row=count + 1, column=4).value = 0
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=2).value = str(
+                            i[1]['images'][0]['tags'][0]['price_kop']['text'])
+
+
+                    else:
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=2).value = 'НЕ СМОГ ОПРЕДЕЛИТЬ ЦЕНЫ'
+                        # print('НЕТ ЦЕНЫ')
+                else:
+                    # print('НЕТ ЦЕНЫ')
+                    sheet.cell(row=count + 1, column=4).value = 0
+                    sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    sheet.cell(row=count + 1, column=1).value = i[0]
+                    sheet.cell(row=count + 1, column=3).value = i[2]
+                    sheet.cell(row=count + 1, column=2).value = 'НЕ СМОГ ОПРЕДЕЛИТЬ ЦЕНЫ'
+        else:
+            if i[1]['images'][0]['tags'][0]['price_kop']:
+                if i[1]['images'][0]['tags'][0]['price_kop']['text'] != '':
+                    if i[0] == float('0' + str(i[1]['images'][0]['tags'][0]['price_kop']['text'])):
+                        sheet.cell(row=count + 1, column=4).value = 1
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                    else:
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str(\
+                        i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                    # print('0' + '.' + i[1]['images'][0]['tags'][0]['price_kop']['text'])
+                else:
+                    sheet.cell(row=count + 1, column=4).value = 0
+                    sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    sheet.cell(row=count + 1, column=1).value = i[0]
+                    sheet.cell(row=count + 1, column=3).value = i[2]
+                    sheet.cell(row=count + 1, column=2).value = 'НЕ СМОГ ОПРЕДЕЛИТЬ ЦЕНЫ'
+                    # print('НЕТ ЦЕНЫ')
+            else:
+                sheet.cell(row=count + 1, column=4).value = 0
+                sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                sheet.cell(row=count + 1, column=1).value = i[0]
+                sheet.cell(row=count + 1, column=3).value = i[2]
+                sheet.cell(row=count + 1, column=2).value = 'НЕ СМОГ ОПРЕДЕЛИТЬ ЦЕНЫ'
+
     else:
-        doublearr = list()
-        for j in i[1]['images'][0]['tags']:
-            if j['price_rub'] != None and j['price_kop'] != None:
-                r = str(j['price_rub']['text'])
-                k = str(j['price_kop']['text'])
-                p = str(r+'.'+k).strip()
-                if i[0] == float(p):
-                    url = (i[1]['images'][0]['url'])
-                    #sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=4).value = 1
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = p
-                    sheet.cell(row=count+1, column=3).value = i[2]
-                    #sheet.cell(row=count+1, column=6).value = 'первая цена совпала'
-                    #sheet.cell(row=count+1, column=7).value = '>= 2 ответа'
-                    break
+        # print('2 ЦЕНЫ')
+        for j in range(len(i[1]['images'][0]['tags'])-1):
+            max_prob = 0
+            mx_prob_index = 0
+            if i[1]['images'][0]['tags'][j]['prob'] > max_prob:
+                max_prob = i[1]['images'][0]['tags'][j]['prob']
+                max_prob_index = j
+            #     print(j,'INDEEEEX')
+            # print(j, 'INDEEEEX ^^')
+        if i[1]['images'][0]['tags'][max_prob_index]['price_rub']:
+            if i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'] != '':
+                if i[1]['images'][0]['tags'][max_prob_index]['price_kop']:
+                    if i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'] != '':
+                        if i[0] == float(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'] + '.'\
+                              + i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text']):
+                            # print('СОВПАЛО!')
+                            # записываем 1 в сравнение
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'] + '.'\
+                              + i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                        else:
+                            # print(i[1]['images'][0]['tags'][j]['price_rub']['text'] + '.'\
+                            # + i[1]['images'][0]['tags'][j]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'] + '.'\
+                            + i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                    else:
+                        # print(i[1]['images'][0]['tags'][j]['price_rub']['text'])
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value =i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text']
                 else:
-                    doublearr.append(p)
-                    url = (i[1]['images'][0]['url'])
-                    sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=4).value = 0
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = str(doublearr)
-                    sheet.cell(row=count+1, column=3).value = i[2]
-                    #sheet.cell(row=count+1, column=6).value = '2 и более значения и ничего не совпало'
-                    #sheet.cell(row=count+1, column=7).value = '>= 2 ответа'
-
-
-            elif j['price_rub'] != None  and j['price_rub']['text'] != '' and j['price_kop'] == None:
-                r = str(j['price_rub']['text']).strip()
-                doublearr.append(r)
-                if i[0] == float(r):
-                    sheet.cell(row=count+1, column=4).value = 0
-                    url = (i[1]['images'][0]['url'])
-                    sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = str(doublearr)
-                    sheet.cell(row=count+1, column=3).value = i[2]
-                    #sheet.cell(row=count+1, column=6).value = 'совпали только рубли'
-                    #sheet.cell(row=count+1, column=7).value = '>= 2 ответа'
-                    #sheet.cell(row=count+1, column=8).value = str(i[1]['images'][0]['tags'])
-                    break
-                else:
-                    doublearr.append(r)
-                    url = (i[1]['images'][0]['url'])
-                    sheet.cell(row=count+1, column=4).value = 0
-                    sheet.cell(row=count+1, column=5).value = url
-                    sheet.cell(row=count+1, column=1).value = i[0]
-                    sheet.cell(row=count+1, column=2).value = str(doublearr)
-                    sheet.cell(row=count+1, column=3).value = i[2]
-                    #sheet.cell(row=count+1, column=6).value = 'должно быть 2 значения и только копейки'
-                    #sheet.cell(row=count+1, column=7).value = '>= 2 ответа'
+                    # print(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'])
+                    if i[0] == int(str(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'])):
+                        sheet.cell(row=count + 1, column=4).value = 1
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'])
+                    else:
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str(\
+                        i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'])
 
             else:
-                if j['price_rub'] and j['price_rub']['text'] != '':
-                    r = str(j['price_kop']['text']).strip()
+                if i[1]['images'][0]['tags'][max_prob_index]['price_kop']:
+                    if i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'] != '':
+                        # print('0' + '.' + i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                        if i[0] == float('0' + '.' + str(i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])):
+                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=2).value = str(\
+                                i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                        else:
+                            sheet.cell(row=count + 1, column=4).value = 0
+                            sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                            sheet.cell(row=count + 1, column=1).value = i[0]
+                            sheet.cell(row=count + 1, column=3).value = i[2]
+                            sheet.cell(row=count + 1, column=2).value = str( \
+                                i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                    else:
+                        # print('НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ')
+                        sheet.cell(row=count + 1, column=2).value = 'НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ'
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
                 else:
-                    r = "-"
-                if j['price_kop'] and j['price_kop']['text'] != '':
-                    k = str(j['price_kop']['text']).strip()
+                    # print('НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ')
+                    sheet.cell(row=count + 1, column=2).value = 'НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ'
+                    sheet.cell(row=count + 1, column=4).value = 0
+                    sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    sheet.cell(row=count + 1, column=1).value = i[0]
+                    sheet.cell(row=count + 1, column=3).value = i[2]
+        else:
+            if i[1]['images'][0]['tags'][max_prob_index]['price_kop']:
+                if i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'] != '':
+                    # print('0' + '.' + i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                    if i[0] == float('0' + '.' + str(i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])):
+                        sheet.cell(row=count + 1, column=4).value = 1
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str( \
+                            i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+                    else:
+                        sheet.cell(row=count + 1, column=4).value = 0
+                        sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                        sheet.cell(row=count + 1, column=1).value = i[0]
+                        sheet.cell(row=count + 1, column=3).value = i[2]
+                        sheet.cell(row=count + 1, column=2).value = str(\
+                            i[1]['images'][0]['tags'][max_prob_index]['price_kop']['text'])
+
                 else:
-                    k = "-"
-                p = str(r+'.'+k)
-                doublearr.append(p)
-                #sheet.cell(row=count+1, column=6).value = 'хуйня какая-то'
-                sheet.cell(row=count+1, column=1).value = i[0]
-                url = (i[1]['images'][0]['url'])
-                sheet.cell(row=count+1, column=2).value = str(doublearr)
-                sheet.cell(row=count+1, column=3).value = i[2]
-                sheet.cell(row=count+1, column=4).value = 0
-                sheet.cell(row=count+1, column=5).value = url
-                #sheet.cell(row=count+1, column=7).value = '>= 2 ответа'
-                #sheet.cell(row=count+1, column=8).value = str(i[1]['images'][0]['tags'])
+                    # print('НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ')
+                    sheet.cell(row=count + 1, column=2).value = 'НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ'
+                    sheet.cell(row=count + 1, column=4).value = 0
+                    sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                    sheet.cell(row=count + 1, column=1).value = i[0]
+                    sheet.cell(row=count + 1, column=3).value = i[2]
+            else:
+                # print('НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ')
+                sheet.cell(row=count + 1, column=2).value = 'НЕТ ЦЕНЫ ПОД ЭТИМ ИНДЕКСОМ'
+                sheet.cell(row=count + 1, column=4).value = 0
+                sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
+                sheet.cell(row=count + 1, column=1).value = i[0]
+                sheet.cell(row=count + 1, column=3).value = i[2]
 
 
 
-
-
-
-
-book.save('cv_answers.xlsx')
 connect.close()
+book.save('xxx.xlsx')
