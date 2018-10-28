@@ -49,6 +49,7 @@ for i in data:
     # print(i[1]['images'][0]['tags'][0]['price_rub']['text'])
     if len(i[1]['images'][0]['tags']) == 0:
         # print('НЕТ ОТВЕТА ОТ СИВИ')
+
         sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
         sheet.cell(row=count + 1, column=2).value = 'НЕТ ОТВЕТА ОТ СИВИ'
         sheet.cell(row=count + 1, column=4).value = 0
@@ -204,7 +205,7 @@ for i in data:
                         else:
                             # print(i[1]['images'][0]['tags'][j]['price_rub']['text'] + '.'\
                             # + i[1]['images'][0]['tags'][j]['price_kop']['text'])
-                            sheet.cell(row=count + 1, column=4).value = 1
+                            sheet.cell(row=count + 1, column=4).value = 0
                             sheet.cell(row=count + 1, column=5).value = '=HYPERLINK("%s")' % url
                             sheet.cell(row=count + 1, column=1).value = i[0]
                             sheet.cell(row=count + 1, column=2).value = str(i[1]['images'][0]['tags'][max_prob_index]['price_rub']['text'] + '.'\
