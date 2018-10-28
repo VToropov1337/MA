@@ -3,9 +3,6 @@ import psycopg2
 
 
 connect = psycopg2.connect(database='postgres', user='master', host='localhost', password='master')
-
-
-
 cursor = connect.cursor()
 
 wb = load_workbook('./users_coordinate.xlsx')

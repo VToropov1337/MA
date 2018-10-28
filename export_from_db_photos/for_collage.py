@@ -1,5 +1,4 @@
 import psycopg2
-import json
 
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
 cursor = connect.cursor()
@@ -34,16 +33,8 @@ for i in arr:
     arr2.append(hh)
 
 
-# with open('yarche.json','w') as f:
-#     json.dump(arr2, f)
-#
+
 with open('***.html','w') as f:
     for i in arr2:
         k = i['url']
-        # f.write("\"{}\"\n".format(k))
         f.write("<img style=\"width:300px\" src=\"{}\"/>\n".format(k))
-
-
-
-
-        # <img style="width:300px" src=

@@ -1,5 +1,4 @@
 import json
-import pprint
 
 old = list()
 new = list()

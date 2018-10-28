@@ -1,5 +1,4 @@
 import json
-import pprint
 
 
 new = list()
@@ -35,7 +34,3 @@ for i in old:
 
 with open('5-new-new.json','w') as nf:
     nf.write(json.dumps(new))
-
-
-
-

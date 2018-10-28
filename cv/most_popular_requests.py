@@ -36,4 +36,3 @@ for d in sorted(days.keys()):
 
 
 book.save('top_requests_for_days_prod.xlsx')
-

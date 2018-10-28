@@ -1,6 +1,6 @@
 import psycopg2
 from openpyxl import Workbook
-import csv
+
 
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')
 cursor = connect.cursor()

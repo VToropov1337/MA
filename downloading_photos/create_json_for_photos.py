@@ -1,5 +1,4 @@
 import psycopg2
-from openpyxl import Workbook
 import json
 
 connect = psycopg2.connect(database='***', user='***', host='***', port='***', password='***')

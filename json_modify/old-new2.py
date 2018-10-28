@@ -1,5 +1,5 @@
 import json
-import pprint
+
 
 old = list()
 new = list()
@@ -36,7 +36,7 @@ for i in old:
         wrapped['polygon'] = polygon
         c += 1
         hh['objects'].append(wrapped)
-        
+
     new.append(hh)
 
 
