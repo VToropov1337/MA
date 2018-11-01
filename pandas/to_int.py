@@ -1,87 +1,75 @@
 import pandas as pd
-import numpy as np
 
-pd.set_option('display.max_columns', 100)
+pd.set_option('display.max_columns', 20)
 pd.set_option('display.max_rows', 10)
 
 df = pd.read_csv('all_prices_filled.csv', sep=',')
-writer = pd.ExcelWriter("report_test.xlsx", engine='xlsxwriter')
-df.to_excel(writer, sheet_name='Sheet1')
+writer = pd.ExcelWriter("Отчет.xlsx", engine='xlsxwriter')
+df1 = df.head(10)
+df1.to_excel(writer, sheet_name='report')
 
 workbook = writer.book
-worksheet = writer.sheets['Sheet1']
+worksheet = writer.sheets['report']
 
-f1 = workbook.add_format({'num_format': '0.00'})
-f2 = workbook.add_format({'num_format': '0.0'})
-f3 = workbook.add_format({'num_format': '0'})
 
-counter_barcode = 1
-counter_client_card = 1
-counter_without_card = 1
-counter_promo = 1
+def check_df(df):
+    if isinstance(df, pd.DataFrame):
+        pass
+    else:
+        raise ValueError(
+            'Параметры не соответствуют объектам pandas. Проверь следующие параметры: датафрейм, страница, книга')
 
-for i in df:
-    for value in df[i]:
-        if i == 'ШТРИХКОД':
-            column_index = df.columns.get_loc("ШТРИХКОД")
-            worksheet.write(counter_barcode, column_index + 1, value, f3)
-            counter_barcode += 1
 
-for i in df:
-    for value in df[i]:
-        if i == 'Цена по карте клиента':
-            value = str(value)
-            # print(value,len(value[value.index('.'):]))
-            if value.find('.') and len(value[value.index('.'):]) == 3:
-                column_index = df.columns.get_loc("Цена по карте клиента")
-                value = float(value)
-                worksheet.write_number(counter_client_card, column_index + 1, value, f1)
-                counter_client_card += 1
-            elif value.find('.') and len(value[value.index('.'):]) == 2 and value[-1] != '0':
-                column_index = df.columns.get_loc("Цена по карте клиента")
-                value = float(value)
-                worksheet.write_number(counter_client_card, column_index + 1, value, f2)
-                counter_client_card += 1
+def barcode_to_int(dataframe, worksheet, workbook, header):
+    check_df(dataframe)
+    if isinstance(header, str):
+        counter_barcode = 1
+        f3 = workbook.add_format({'num_format': '0'})
+        for i in dataframe:
+            for value in dataframe[i]:
+                if i == header:
+                    column_index = dataframe.columns.get_loc(header)
+                    worksheet.write(counter_barcode, column_index + 1, value, f3)
+                    counter_barcode += 1
+    else:
+        raise ValueError('Название признака не строка')
+
+
+def price_to_int(dataframe, worksheet, workbook, header):
+    check_df(dataframe)  # проверка на датафрейм
+    if isinstance(header, str):
+        counter = 1
+        f1 = workbook.add_format({'num_format': '0.00'})  # числовые форматы для разных типов цен
+        f2 = workbook.add_format({'num_format': '0.0'})
+        f3 = workbook.add_format({'num_format': '0'})
+        for i in dataframe:
+            if i == header:
+                for value in dataframe[i]:
+                    value = str(value)
+                    if value.find('.') and len(value[value.index('.'):]) == 3:  # проверяю кол-во знаков после запятой
+                        column_index = dataframe.columns.get_loc(header)
+                        value = float(value)
+                        worksheet.write_number(counter, column_index + 1, value, f1)
+                        counter += 1
+                    elif value.find('.') and len(value[value.index('.'):]) == 2 and value[-1] != '0':
+                        column_index = dataframe.columns.get_loc(header)
+                        value = float(value)
+                        worksheet.write_number(counter, column_index + 1, value, f2)
+                        counter += 1
+                    else:
+                        column_index = dataframe.columns.get_loc(header)
+                        value = int(float(value))
+                        worksheet.write_number(counter, column_index + 1, value, f3)
+                        counter += 1
             else:
-                column_index = df.columns.get_loc("Цена по карте клиента")
-                value = int(float(value))
-                worksheet.write_number(counter_client_card, column_index + 1, value, f3)
-                counter_client_card += 1
+                print('Признак "{}" не был отформатирован'.format(i))
+    else:
+        raise ValueError('Название признака не строка')
 
-        if i == 'Цена конкурента (без карты)':
-            value = str(value)
-            if value.find('.') and len(value[value.index('.'):]) == 3:
-                column_index = df.columns.get_loc("Цена конкурента (без карты)")
-                value = float(value)
-                worksheet.write_number(counter_without_card, column_index + 1, value, f1)
-                counter_without_card += 1
-            elif value.find('.') and len(value[value.index('.'):]) == 2 and value[-1] != '0':
-                column_index = df.columns.get_loc("Цена конкурента (без карты)")
-                value = float(value)
-                worksheet.write_number(counter_without_card, column_index + 1, value, f2)
-                counter_without_card += 1
-            else:
-                column_index = df.columns.get_loc("Цена конкурента (без карты)")
-                value = int(float(value))
-                worksheet.write_number(counter_without_card, column_index + 1, value, f3)
-                counter_without_card += 1
 
-        if i == 'Цена по акции':
-            value = str(value)
-            if value.find('.') and len(value[value.index('.'):]) == 3:
-                column_index = df.columns.get_loc("Цена по акции")
-                value = float(value)
-                worksheet.write_number(counter_promo, column_index + 1, value, f1)
-                counter_promo += 1
-            elif value.find('.') and len(value[value.index('.'):]) == 2 and value[-1] != '0':
-                column_index = df.columns.get_loc("Цена по акции")
-                value = float(value)
-                worksheet.write_number(counter_promo, column_index + 1, value, f2)
-                counter_promo += 1
-            else:
-                column_index = df.columns.get_loc("Цена по акции")
-                value = int(float(value))
-                worksheet.write_number(counter_promo, column_index + 1, value, f3)
-                counter_promo += 1
+barcode_to_int(df1, worksheet, workbook, "ШТРИХКОД")
+price_to_int(df1, worksheet, workbook, "Цена по карте клиента")
+price_to_int(df1, worksheet, workbook, "Цена конкурента (без карты)")
+price_to_int(df1, worksheet, workbook, "Цена по акции")
 
 writer.save()
