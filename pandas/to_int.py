@@ -46,7 +46,7 @@ def price_to_int(dataframe, worksheet, workbook, header):
             if i == header:
                 for value in dataframe[i]:
                     value = str(value)
-                    if value.find('.') and len(value[value.index('.'):]) == 3:  # проверяю кол-во знаков после запятой
+                    if value.find('.') and len(value[value.index('.'):])  >= 3:  # проверяю кол-во знаков после запятой
                         column_index = dataframe.columns.get_loc(header)
                         value = float(value)
                         worksheet.write_number(counter, column_index + 1, value, f1)
