@@ -8,11 +8,23 @@ pd.set_option('display.max_rows', 20)
 
 
 
-
+#метод на запись в файл
 def toCsv(df, path):
     df.to_csv(path, index=False, float_format='%.2f')
     return df
 
+#метод на получение строк с пустыми ценами
+def getWithoutPrices(df):
+    return df[
+        (df['price_orig'].isnull()) &
+        (df['promo_price'].isnull()) &
+        (df['price_disc'].isnull())
+    ]
+
+
+
+#просмотр подозрительно коротких названий товаров
+df[(df['sku'].notnull()) & (df['sku'].apply(lambda x: len(str(x)) <15))]
 
 
 #выбираю непустые и уникальные шк
