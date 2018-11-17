@@ -239,3 +239,20 @@ WHERE id IN (range)
 
 
 ======
+select array_agg(id) from ma_metro.users where phone in (?)
+
+
+======
+SELECT g.city, g.id, g.title, t.id, t.title,COUNT(DISTINCT(answer_files.id)) as photos_qty, COUNT(DISTINCT(r2.id))as reports2, r1.id, r1.performer_id, CONCAT_WS(' ',u.first_name,u.last_name) as name, u.phone
+FROM ma_metro.reports r1
+INNER JOIN ma_metro.tasks t ON r1.task_id = t.id
+INNER JOIN ma_metro.reports r2 ON r2.origin_report_id = r1.id
+INNER JOIN ma_metro.answers ON answers.report_id = r1.id
+INNER JOIN ma_metro.answer_files ON answer_files.answer_id = answers.id
+INNER JOIN ma_metro.geo_objects g ON g.id = t.geo_object_id
+INNER JOIN ma_metro.users u ON u.id = r1.performer_id
+WHERE t.wave = ? AND answers.key = 'photo_price' AND r1.state = 'accepted'
+GROUP BY (g.city, g.id, g.title, t.id, t.title, r1.id,r1.performer_id, name, u.phone);
+
+
+======
