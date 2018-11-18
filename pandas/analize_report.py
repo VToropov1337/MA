@@ -93,6 +93,8 @@ def check_cat(df,store_title):
     return df_store
 
 
+#шк на 2
+df1 = df[df['bc'].apply(lambda x: str(x)[0] == '2')]
 
 
 #шапка для отчета
