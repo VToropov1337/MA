@@ -256,3 +256,21 @@ GROUP BY (g.city, g.id, g.title, t.id, t.title, r1.id,r1.performer_id, name, u.p
 
 
 ======
+SELECT e.block_class_name as title,
+      sum(case j.state when 'active' then 1 else 0 end) AS active,
+      sum(case j.state when 'completed' then 1 else 0 end) AS completed,
+      sum(case j.state when 'paused' then 1 else 0 end) AS paused
+      FROM conveyor_jobs j
+      INNER JOIN conveyor_elements e ON j.chain_element_id = e.id
+      WHERE j.blueprint_id = #{ clientreq.blueprint_id }
+        AND j.wave IN #{ Report.send(:sanitize_sql, ["(?)", clientreq.waves]) }
+      GROUP BY e.block_class_name
+      ORDER BY e.block_class_name ASC
+
+
+=====
+SELECT * FROM reports
+LEFT JOIN answers
+	ON reports.id = answers.report_id
+WHERE user_id = 1728
+AND EXTRACT(DAY FROM created_at) = 20;
