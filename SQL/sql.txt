@@ -277,10 +277,30 @@ AND EXTRACT(DAY FROM created_at) = 20;
 
 
 ======
-SELECT CONCAT_WS('','https://ma-metro.millionagents.com/data3/answer/image/', answer_files.id, '/', file) as url
-FROM ma_metro.reports r2
+SELECT f FROM (SELECT DISTINCT(title),REGEXP_REPLACE(title, '_.*', '') AS f
+FROM ma_metro.geo_objects) as a
+GROUP BY f;
+
+
+
+
+======
+SELECT DISTINCT ON(r2.article_id) r2.article_id, CONCAT_WS('','https://ma-metro.millionagents.com/data2/answer/image/', answer_files.id, '/', file) as url
+FROM ma_metro.reports r
+INNER JOIN ma_metro.reports r2
+	ON r.id = r2.origin_report_id
+INNER JOIN ma_metro.tasks t
+	ON r2.task_id = t.id
 JOIN ma_metro.answer_files
     ON answer_files.id = r2.metro_price_photo_id
-WHERE r2.state = 'accepted'
+INNER JOIN ma_metro.geo_objects
+    ON t.geo_object_id = geo_objects.id
+WHERE t.project_id = 2
+AND r2.state = 'accepted'
 AND r2.metro_available = True
-LIMIT 10;
+AND r2.metro_promo = True
+AND r2.created_at >= '2018-01-11'
+AND r2.created_at <= '2018-11-10'
+AND geo_objects.title = 'АШАН'
+AND t.title NOT IN ('ОВОЩИ (Если товар упакован, обязательна фотография этикетки)','ФРУКТЫ (Если товар упакован, обязательна фотография этикетки)')
+LIMIT 1000;
