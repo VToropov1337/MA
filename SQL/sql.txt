@@ -274,3 +274,13 @@ LEFT JOIN answers
 	ON reports.id = answers.report_id
 WHERE user_id = 1728
 AND EXTRACT(DAY FROM created_at) = 20;
+
+
+======
+SELECT CONCAT_WS('','https://ma-metro.millionagents.com/data3/answer/image/', answer_files.id, '/', file) as url
+FROM ma_metro.reports r2
+JOIN ma_metro.answer_files
+    ON answer_files.id = r2.metro_price_photo_id
+WHERE r2.state = 'accepted'
+AND r2.metro_available = True
+LIMIT 10;
