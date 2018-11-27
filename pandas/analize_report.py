@@ -106,28 +106,28 @@ df_final = df.drop(columns=list(set(RAW_HEADERS) - set(HEADERS)))
 
 
 
-# writer = pd.ExcelWriter(path, engine='xlsxwriter', options={'strings_to_urls': False})
-# df_final.to_excel(writer, sheet_name='Лист 1', index=False)
-# worksheet = writer.sheets['Лист 1']
-#
-# #указываю признаки (колонки) для форматирования и формат для них
-# FORMATS = ["ШТРИХКОД", "Цена конкурента (без карты)", "Цена по карте клиента", "Цена по акции"]
-# barcode_format = writer.book.add_format({'num_format': '0'})
-# price_format = writer.book.add_format({'num_format': '0.00'})
-#
-# #иду по сторока и столбцам и если названия признака нет в списке для форматирования иду дальше
-# for j, header in enumerate(df1):
-#         if header not in FORMATS:
-#             continue
-#         #найденный нужный признак для форматирования записываю в файл, устанавливая нужный формат данных
-#         for i, value in enumerate(df_final[header]):
-#             if header == "ШТРИХКОД":
-#                 worksheet.write_number(i+1, j, int(value), barcode_format)
-#                 continue
-#
-#             if np.isnan(value):
-#                 continue
-#
-#             worksheet.write(i+1, j, value, price_format)
-#
-#     writer.save()
+writer = pd.ExcelWriter(path, engine='xlsxwriter', options={'strings_to_urls': False})
+df_final.to_excel(writer, sheet_name='Лист 1', index=False)
+worksheet = writer.sheets['Лист 1']
+
+#указываю признаки (колонки) для форматирования и формат для них
+FORMATS = ["ШТРИХКОД", "Цена конкурента (без карты)", "Цена по карте клиента", "Цена по акции"]
+barcode_format = writer.book.add_format({'num_format': '0'})
+price_format = writer.book.add_format({'num_format': '0.00'})
+
+#иду по сторока и столбцам и если названия признака нет в списке для форматирования иду дальше
+for j, header in enumerate(df1):
+        if header not in FORMATS:
+            continue
+        #найденный нужный признак для форматирования записываю в файл, устанавливая нужный формат данных
+        for i, value in enumerate(df_final[header]):
+            if header == "ШТРИХКОД":
+                worksheet.write_number(i+1, j, int(value), barcode_format)
+                continue
+
+            if np.isnan(value):
+                continue
+
+            worksheet.write(i+1, j, value, price_format)
+
+    writer.save()
