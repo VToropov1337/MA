@@ -48,3 +48,14 @@ with open('magnit.html','w') as f:
     for line in df_final['url']:
         line = line.replace('data2','data3')
         f.write("<img style=\"width:300px\" src=\"{}\"/>\n".format(line))
+
+arr = list()
+for i in range(len(df_final)):
+    hh2 = dict()
+    line = str(df_final.loc[i]['url'])
+    hh['store_title'] = ***
+    hh['source'] = line.replace('data2','data3')
+    arr.append(hh)
+
+with open('***.json', 'w') as f:
+    json.dump(arr, f)
