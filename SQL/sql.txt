@@ -1,5 +1,5 @@
 SELECT
-CONCAT_WS('','https://ma-metro.millionagents.com/data2/answer/image/', answer_files.id, '/', file) as url,reports.id as report_id, geo_objects.title
+CONCAT_WS('','https://***/***/***/***/', answer_files.id, '/', file) as url,reports.id as report_id, geo_objects.title
 FROM ma_metro.reports
 JOIN ma_metro.tasks
 ON reports.task_id = tasks.id
@@ -285,7 +285,7 @@ GROUP BY f;
 
 
 ======
-SELECT DISTINCT ON(r2.article_id) r2.article_id, CONCAT_WS('','https://ma-metro.millionagents.com/data2/answer/image/', answer_files.id, '/', file) as url
+SELECT DISTINCT ON(r2.article_id) r2.article_id, CONCAT_WS('','https://***/', answer_files.id, '/', file) as url
 FROM ma_metro.reports r
 INNER JOIN ma_metro.reports r2
 	ON r.id = r2.origin_report_id
