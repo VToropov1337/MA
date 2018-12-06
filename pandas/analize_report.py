@@ -49,6 +49,28 @@ def getWithoutPrices(df):
     ]
 
 
+#баркод не нул
+df1 = df[(df['bc'].notnull())]
+
+#удалить дубликаты по признаку и создать новый датафрейм
+df2 = df1.drop_duplicates(subset=['bc'])
+
+
+#создать несколько файлов по срезам
+# c = 0
+# t = 0
+# s = 0
+# for i in range(len(df)+1):
+#     c+=1
+#     if c % 52 == 0:
+#         t += 1
+#         df[s:c].to_csv('шк_отсутствует{}.csv'.format(t), index=False)
+#         s = c
+
+
+
+
+
 
 #просмотр подозрительно коротких названий товаров
 df[(df['sku'].notnull()) & (df['sku'].apply(lambda x: len(str(x)) <15))]
