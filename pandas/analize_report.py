@@ -56,6 +56,49 @@ df1 = df[(df['bc'].notnull())]
 df2 = df1.drop_duplicates(subset=['bc'])
 
 
+
+#заполняю пропуски
+#nan
+clean_df = df['tz'].fillna('Missing')
+#'' булево
+clean_df[clean_df == ''] = 'Unknown'
+
+
+
+#дф с товарами только определенного производителя
+dft = df[df['producer'] == 'Procter And Gamble']
+
+#смотрим сколько в городе сетей и указываем их кол-во
+dft.groupby(['city','shop_title']).size()
+
+#смотрим общую сумму товаров в каждом магазине
+dft.groupby(['city','shop_title'])['sku_title'].sum()
+
+
+
+
+#Содержит ли строка подстроку в признаке
+#                                                #true     #false
+ops = np.where(df['a'].str.contains('Windows'),'Windows','Not Windows')
+
+
+#данные по названию и с помощью метода size () получу объект Series, содержащий размеры групп для каждого наименования:
+quantity_by_title = df.groupby('title').size()
+
+
+
+
+
+#                           по этому признаку  смотрю сюда     разбиваю на колонки
+mean_df = df.pivot_table('rating',index=['title'], columns=['gender'], aggfunc='mean')
+
+#последние 5 записей
+df.tail()
+
+
+
+
+
 #создать несколько файлов по срезам
 # c = 0
 # t = 0
