@@ -75,6 +75,14 @@ dft.groupby(['city','shop_title']).size()
 dft.groupby(['city','shop_title'])['sku_title'].sum()
 
 
+# создаем массив уникальных имен
+all_names = top1000.name.unique()
+#булевый массив с именами в которых есть подстрока
+mask = np.array(['ША' in x.lower() for x in all_names])
+#создаю массив с уникальными именами
+sha_like = all_names[mask]
+
+
 
 
 #Содержит ли строка подстроку в признаке
@@ -93,8 +101,10 @@ df['last_letter'] = last_letters
 
 
 
-#                           по этому признаку  смотрю сюда     разбиваю на колонки
+#                    по этому признаку   смотрю сюда     разбиваю на колонки    применяю функцию
 mean_df = df.pivot_table('rating',index=['title'], columns=['gender'], aggfunc='mean')
+#сводная пример
+table = pd.pivot_table(df, values='D', index=['A', 'B'],columns=['C'], aggfunc=np.sum)
 
 #последние 5 записей
 df.tail()
@@ -104,15 +114,15 @@ df.tail()
 
 
 #создать несколько файлов по срезам
-# c = 0
-# t = 0
-# s = 0
-# for i in range(len(df)+1):
-#     c+=1
-#     if c % 52 == 0:
-#         t += 1
-#         df[s:c].to_csv('шк_отсутствует{}.csv'.format(t), index=False)
-#         s = c
+c = 0
+t = 0
+s = 0
+for i in range(len(df)+1):
+    c+=1
+    if c % 52 == 0:
+        t += 1
+        df[s:c].to_csv('шк_отсутствует{}.csv'.format(t), index=False)
+        s = c
 
 
 
