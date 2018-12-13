@@ -85,7 +85,11 @@ ops = np.where(df['a'].str.contains('Windows'),'Windows','Not Windows')
 #данные по названию и с помощью метода size () получу объект Series, содержащий размеры групп для каждого наименования:
 quantity_by_title = df.groupby('title').size()
 
+# извлекаем последнюю букву имени в столбце name
+get_last_letter = lambda x: x[-1]
 
+#добавляю новый признак, если индексы совпадают
+df['last_letter'] = last_letters
 
 
 
