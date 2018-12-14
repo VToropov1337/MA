@@ -11,8 +11,6 @@ pd.set_option('display.max_rows', 20)
 np.array.ndim
 
 
-
-
 SEGMENTS_ALL = ['ПАРФЮМЕРИЯ ГИГИЕНА', 'ВИНО', 'СР-ВА ПО УХ ЗА ВОЛОСАМИ',
        'ЗЛАКИ И БАТОНЧИКИ', 'СРЕД Д/УБОРКИ ПОМЕЩЕНИЙ', 'ДЕТСКОЕ ПИТАНИЕ',
        'ДЕСЕРТЫ ОХЛАЖДЕННЫЕ', 'КОНСЕРВЫ', 'ШОКОЛАДНЫЕ КОНДИТ ИЗД-Я',
@@ -32,12 +30,7 @@ SEGMENTS_ALL = ['ПАРФЮМЕРИЯ ГИГИЕНА', 'ВИНО', 'СР-ВА П
        'МЯСО ПТИЦЫ', 'РЕМОНТ', 'ГОТОВАЯ КУЛИНАРИЯ П/П', 'ИГРУШКИ', 'МЯСО П/П',
        'ДОМАШНЯЯ УТВАРЬ']
 
-макароны, орехи, крупы
-
-
 SEGMENTS_TRUE = ['ПРОМ МУЧНЫЕ КОНД-Е ИЗД-Я','МЯСО П/П','МЯСО ПТИЦЫ','ГОТОВАЯ КУЛИНАРИЯ П/П','МАСЛА, УКСУС, СПЕЦИИ,СОЛЬ','ПРОМЫШЛ-Я ВЫПЕЧКА И ХЛЕБ']
-
-
 
 #метод на запись в файл
 def toCsv(df, path):
@@ -59,14 +52,11 @@ df1 = df[(df['bc'].notnull())]
 #удалить дубликаты по признаку и создать новый датафрейм
 df2 = df1.drop_duplicates(subset=['bc'])
 
-
-
 #заполняю пропуски
 #nan
 clean_df = df['tz'].fillna('Missing')
 #'' булево
 clean_df[clean_df == ''] = 'Unknown'
-
 
 
 #дф с товарами только определенного производителя
@@ -88,7 +78,6 @@ sha_like = all_names[mask]
 
 
 
-
 #Содержит ли строка подстроку в признаке
 #                                                #true     #false
 ops = np.where(df['a'].str.contains('Windows'),'Windows','Not Windows')
@@ -103,8 +92,6 @@ get_last_letter = lambda x: x[-1]
 #добавляю новый признак, если индексы совпадают
 df['last_letter'] = last_letters
 
-
-
 #                    по этому признаку   смотрю сюда     разбиваю на колонки    применяю функцию
 mean_df = df.pivot_table('rating',index=['title'], columns=['gender'], aggfunc='mean')
 #сводная пример
@@ -112,7 +99,6 @@ table = pd.pivot_table(df, values='D', index=['A', 'B'],columns=['C'], aggfunc=n
 
 #последние 5 записей
 df.tail()
-
 
 #создать несколько файлов по срезам
 c = 0
@@ -124,6 +110,8 @@ for i in range(len(df)+1):
         t += 1
         df[s:c].to_csv('шк_отсутствует{}.csv'.format(t), index=False)
         s = c
+
+df[c:].to_csv('шк_отсутствует{}.csv'.format(t+1), index=False)
 
 #просмотр подозрительно коротких названий товаров
 df[(df['sku'].notnull()) & (df['sku'].apply(lambda x: len(str(x)) <15))]
@@ -162,7 +150,6 @@ def create_ids(arr):
 
 #store_title - название сети
 #store_list - массив строк-брендов
-
 def check_cat(df,store_title):
     df_store = df[df['outlet'] == str(store_title)]
     df_store = df_store[df_store['brand'].apply(lambda x: str(x) in store_list)]
@@ -192,7 +179,7 @@ for j, header in enumerate(df1):
 
             worksheet.write(i+1, j, value, price_format)
 
-    writer.save()
+        writer.save()
 
 #шапка для отчета
 HEADERS = ['geo_object_id', 'title' , 'id', 'price', etc]
