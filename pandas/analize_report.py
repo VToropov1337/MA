@@ -7,6 +7,10 @@ pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 20)
 
 
+# кол-во элементов в массиве np
+np.array.ndim
+
+
 
 
 SEGMENTS_ALL = ['ПАРФЮМЕРИЯ ГИГИЕНА', 'ВИНО', 'СР-ВА ПО УХ ЗА ВОЛОСАМИ',
@@ -110,9 +114,6 @@ table = pd.pivot_table(df, values='D', index=['A', 'B'],columns=['C'], aggfunc=n
 df.tail()
 
 
-
-
-
 #создать несколько файлов по срезам
 c = 0
 t = 0
@@ -123,11 +124,6 @@ for i in range(len(df)+1):
         t += 1
         df[s:c].to_csv('шк_отсутствует{}.csv'.format(t), index=False)
         s = c
-
-
-
-
-
 
 #просмотр подозрительно коротких названий товаров
 df[(df['sku'].notnull()) & (df['sku'].apply(lambda x: len(str(x)) <15))]
@@ -151,21 +147,22 @@ df2.sort_values(by=['bc'],ascending=False)
 arr = df2['raw_report_edit_link'].tolist()
 
 
-#создаю двумерный массив из каждого элемента arr по разделителю '/'
-qq = list()
-for i in arr:
-    qq.append(i.split('/'))
-
-
-#вытаскиваю ид отчета и записываю в файл txt
-for i in qq:
-    with open('ids.txt','a') as f:
-        f.write('{}\n'.format(i[4]))
+def create_ids(arr):
+    if type(arr) == list():
+    #создаю двумерный массив из каждого элемента arr по разделителю '/'
+        qq = list()
+        for i in arr:
+            qq.append(i.split('/'))
+            #вытаскиваю ид отчета и записываю в файл txt
+        for i in qq:
+            with open('ids.txt','a') as f:
+    else:
+        raise ValueError('args must be array')
 
 
 #store_title - название сети
 #store_list - массив строк-брендов
-#рабочая ищет
+
 def check_cat(df,store_title):
     df_store = df[df['outlet'] == str(store_title)]
     df_store = df_store[df_store['brand'].apply(lambda x: str(x) in store_list)]
@@ -174,20 +171,6 @@ def check_cat(df,store_title):
 
 #шк на 2
 df1 = df[df['bc'].apply(lambda x: str(x)[0] == '2')]
-
-
-#шапка для отчета
-HEADERS = ['geo_object_id', 'title' , 'id', 'price', etc]
-RAW_HEADERS = df.columns.tolist()
-
-#удаляю ненужные признаки(колонки) через множества, тк вычитать массивы нельзя
-df_final = df.drop(columns=list(set(RAW_HEADERS) - set(HEADERS)))
-
-
-
-writer = pd.ExcelWriter(path, engine='xlsxwriter', options={'strings_to_urls': False})
-df_final.to_excel(writer, sheet_name='Лист 1', index=False)
-worksheet = writer.sheets['Лист 1']
 
 #указываю признаки (колонки) для форматирования и формат для них
 FORMATS = ["ШТРИХКОД", "Цена конкурента (без карты)", "Цена по карте клиента", "Цена по акции"]
@@ -203,10 +186,22 @@ for j, header in enumerate(df1):
             if header == "ШТРИХКОД":
                 worksheet.write_number(i+1, j, int(value), barcode_format)
                 continue
-
+            #если значения нет, иду дальше
             if np.isnan(value):
                 continue
 
             worksheet.write(i+1, j, value, price_format)
 
     writer.save()
+
+#шапка для отчета
+HEADERS = ['geo_object_id', 'title' , 'id', 'price', etc]
+RAW_HEADERS = df.columns.tolist()
+
+#удаляю ненужные признаки(колонки) через множества, тк вычитать массивы нельзя
+df_final = df.drop(columns=list(set(RAW_HEADERS) - set(HEADERS)))
+
+#записываю в файл финальный дф
+writer = pd.ExcelWriter(path, engine='xlsxwriter', options={'strings_to_urls': False})
+df_final.to_excel(writer, sheet_name='Лист 1', index=False)
+worksheet = writer.sheets['Лист 1']
