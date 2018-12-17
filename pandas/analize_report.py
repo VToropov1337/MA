@@ -6,9 +6,26 @@ df = pd.read_csv('raw_data.csv',dtype = {'bc': str, 'sku': str, 'producer': str,
 pd.set_option('display.max_columns', 50)
 pd.set_option('display.max_rows', 20)
 
+#создание нового признака
+df1 = df.assign(is_stm = 0)
+
+#произведение векторов
+#arr.shape(6,3)
+arr = np.array([[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18]])
+#arr.T.shape(3,6)
+arr.T
+#shape(3,3) #берем кол-во строк из транспонированного, кол-во элементов из оригинального
+np.dot(arr.T,arr)
+
+
+
+
 
 # кол-во элементов в массиве np
 np.array.ndim
+
+#одномерный массив в многоверный, соответствуя кортежам индексов
+arr = np.arange(32).reshape(8,4)
 
 
 SEGMENTS_ALL = ['ПАРФЮМЕРИЯ ГИГИЕНА', 'ВИНО', 'СР-ВА ПО УХ ЗА ВОЛОСАМИ',
@@ -75,8 +92,6 @@ all_names = top1000.name.unique()
 mask = np.array(['ША' in x.lower() for x in all_names])
 #создаю массив с уникальными именами
 sha_like = all_names[mask]
-
-
 
 #Содержит ли строка подстроку в признаке
 #                                                #true     #false
@@ -148,12 +163,28 @@ def create_ids(arr):
         raise ValueError('args must be array')
 
 
+
+#ПРОВЕРКА СТМ
+########################################################################
 #store_title - название сети
 #store_list - массив строк-брендов
 def check_cat(df,store_title):
     df_store = df[df['outlet'] == str(store_title)]
     df_store = df_store[df_store['brand'].apply(lambda x: str(x) in store_list)]
     return df_store
+
+#в цикле
+%time
+for i in df.index:
+    for j in store_list:
+        if str(j) in str(df1.loc[i][['sku','brand','producer']]):
+            df1.loc[i,'is_stm'] = 1
+
+#разово
+df1 = df.assign(is_stm = np.where(df['sku'].str.contains('ALPRO'),1,0))
+##########################################################################
+
+
 
 
 #шк на 2
