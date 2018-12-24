@@ -306,19 +306,18 @@ AND t.title NOT IN ('ОВОЩИ (Если товар упакован, обяз�
 LIMIT 1000;
 
 =====
-SELECT r1.id as report_1_id, r2.id as report_2_id, r2.barcode, r2.mark , geo_objects.id, geo_objects.title FROM m10.reports r1
+SELECT r1.id as report_1_id, r2.id as report_2_id, r2.barcode,r2.state, r2.mark, scd.fields->'level3' as level3, scd.fields->'level4' as level4, geo_objects.title, geo_objects.id FROM m10.reports r1
 JOIN m10.reports r2
-	ON r2.source_report_id = r1.id
+    ON r2.source_report_id = r1.id
+JOIN m10.skus_clients_data scd
+    ON r2.sku_clients_data_id = scd.id
 JOIN m10.tasks
-	ON r2.task_id = tasks.id
+    ON r2.task_id = tasks.id
 JOIN m10.geo_objects
-	ON tasks.geo_object_id = geo_objects.id
+    ON tasks.geo_object_id = geo_objects.id
 WHERE tasks.project_id = 2
-AND r2.state = 'accepted'
 AND tasks.wave = 'lm_5118_fs'
-GROUP BY report_1_id, report_2_id, geo_objects.id
-
-
+GROUP BY report_1_id, report_2_id, geo_objects.id, scd.fields
 
 =====
 
