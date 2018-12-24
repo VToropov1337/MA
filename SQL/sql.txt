@@ -304,3 +304,40 @@ AND r2.created_at <= '2018-11-10'
 AND geo_objects.title = 'АШАН'
 AND t.title NOT IN ('ОВОЩИ (Если товар упакован, обязательна фотография этикетки)','ФРУКТЫ (Если товар упакован, обязательна фотография этикетки)')
 LIMIT 1000;
+
+=====
+SELECT r1.id as report_1_id, r2.id as report_2_id, r2.barcode, r2.mark , geo_objects.id, geo_objects.title FROM m10.reports r1
+JOIN m10.reports r2
+	ON r2.source_report_id = r1.id
+JOIN m10.tasks
+	ON r2.task_id = tasks.id
+JOIN m10.geo_objects
+	ON tasks.geo_object_id = geo_objects.id
+WHERE tasks.project_id = 2
+AND r2.state = 'accepted'
+AND tasks.wave = 'lm_5118_fs'
+GROUP BY report_1_id, report_2_id, geo_objects.id
+
+
+
+=====
+
+cursor.execute("SELECT CONCAT_WS('','https:///', r2.metro_price_photo_id, '/',file) as url,r2.metro_price_photo_id \
+FROM m10.reports r2 \
+JOIN m10.answer_files \
+	ON answer_files.id = r2.metro_price_photo_id \
+WHERE r2.id  IN (SELECT r2.id FROM m10.reports r1 \
+JOIN m10.reports r2 \
+	ON r2.source_report_id = r1.id \
+JOIN m10.tasks\
+	ON r2.task_id = tasks.id \
+JOIN m10.geo_objects \
+	ON tasks.geo_object_id = geo_objects.id \
+WHERE tasks.project_id = 2 \
+	AND geo_objects.id = 223 \
+	AND r2.state = 'accepted'\
+    AND r1.id = 2863349 \
+    AND tasks.wave = 'lm_5118_fs')\
+")
+
+======
