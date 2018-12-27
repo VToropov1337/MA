@@ -60,6 +60,8 @@ for i in range(len(data)):
 
 
 for i in range(len(data)):
+    c+=1
+    print(c)
     url = data[i][4]
     response = requests.get(url)
     photo = requests.get(url).content
@@ -69,4 +71,10 @@ for i in range(len(data)):
             f.write(photo)
             print('good')
     except OSError:
-        print('gg')
+        url = url.replace('data2','data3')
+        response = requests.get(url)
+        photo = requests.get(url).content
+        Jpegimagefile = Image.open(BytesIO(response.content))
+        with open('{}/{}/{}'.format(data[i][0], data[i][2], data[i][5]) + '.jpg', 'wb') as f:
+            f.write(photo)
+        print('link was changed')
