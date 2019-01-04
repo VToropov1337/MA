@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 import matplotlib
 
 
@@ -15,4 +16,6 @@ df = df.drop(['todel1', 'todel2'],axis=1)
 
 df.head()
 df = df[df['timestamp'].notnull()]
+df['timestamp'] = df['timestamp'].replace('\[','',regex=True)
+df['timezone'] = df['timezone'].replace('\]','',regex=True)
 df['requests'].value_counts(ascending=False).head(15) #самые популярные топ15
