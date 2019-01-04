@@ -10,7 +10,9 @@ encoding='ISO-8859-1',header=None,\
 error_bad_lines=False,engine='c',\
 infer_datetime_format=True)
 
+df.columns=['host','todel1','todel2','timestamp','timezone','requests','http_code','bitr']
+df = df.drop(['todel1', 'todel2'],axis=1)
 
 df.head()
-df = df[df[4].notnull()]
-df[5].value_counts(ascending=False).head(15) #самые популярные топ15
+df = df[df['timestamp'].notnull()]
+df['requests'].value_counts(ascending=False).head(15) #самые популярные топ15
