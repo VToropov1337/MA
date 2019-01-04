@@ -18,4 +18,5 @@ df.head()
 df = df[df['timestamp'].notnull()]
 df['timestamp'] = df['timestamp'].replace('\[','',regex=True)
 df['timezone'] = df['timezone'].replace('\]','',regex=True)
-df['requests'].value_counts(ascending=False).head(15) #самые популярные топ15
+df['requests'].value_counts(ascending=False).head(15) #самые популярные
+df['timestamp'].value_counts(ascending=False).head(15) #кол-во запросов в секунду
