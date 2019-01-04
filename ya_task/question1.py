@@ -13,5 +13,4 @@ infer_datetime_format=True)
 
 df.head()
 df = df[df[4].notnull()]
-df[3].value_counts(ascending=False).head(15) #самые популярные топ15
-df[3].value_counts(ascending=False).head(15).hist()
+df[5].value_counts(ascending=False).head(15) #самые популярные топ15
