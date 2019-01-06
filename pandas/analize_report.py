@@ -106,9 +106,20 @@ def getWithoutPrices(df):
         (df['price_disc'].isnull())
     ]
 
+#оставляет дф содержащий определенное количество наблюдений (кол-во значений в строках не пустые)
+df1.dropna(thresh = 2)
+
+#самые большие значения по признакам
+df1.idxmax()
 
 #баркод не нул
 df1 = df[(df['bc'].notnull())]
+
+#индексация
+df.loc[['index1','index2'], ['column1', 'column2']]
+
+#булева индексация
+df.loc[df['price'] > 200,:'brand']
 
 #удалить дубликаты по признаку и создать новый датафрейм
 df2 = df1.drop_duplicates(subset=['bc'])
