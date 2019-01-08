@@ -118,6 +118,16 @@ df1 = df[(df['bc'].notnull())]
 #индексация
 df.loc[['index1','index2'], ['column1', 'column2']]
 
+
+#уровни иерархического индекса перемещаются в столбцы
+df.reset_index()
+
+#устанавливаем индексы из признаков (и не удаляем их)
+df.set_index(['c', 'd'], drop = False)
+
+#статистика по уровню вложенности
+df.sum(level = 'key1')
+
 #булева индексация
 df.loc[df['price'] > 200,:'brand']
 
@@ -130,6 +140,17 @@ clean_df = df['tz'].fillna('Missing')
 #'' булево
 clean_df[clean_df == ''] = 'Unknown'
 
+#проверка на уникальность индекса
+df.index.is_unique
+
+#вычисляем каждую строку из дф
+format = lambda x: '%.2f' % x
+df.applymap(format)
+#для series
+df['e'].map(format)
+
+#мержу значения из разных дф
+df1.add(df2, fill_value = 0)
 
 #дф с товарами только определенного производителя
 dft = df[df['producer'] == 'Procter And Gamble']
@@ -139,6 +160,9 @@ dft.groupby(['city','shop_title']).size()
 
 #смотрим общую сумму товаров в каждом магазине
 dft.groupby(['city','shop_title'])['sku_title'].sum()
+
+#фильтрую по нужным индексам и признакам
+df.loc[['tt1','tt2','tt3'],['brand1', 'brand2']]
 
 
 # создаем массив уникальных имен
@@ -196,6 +220,9 @@ df1 = grouped_df[grouped_df['seg'] > 1].sort_values('bc',ascending=False)
 
 #создаю датафрейм с проверкой попадания шк по индексам(шк из дф1)
 df2 = df[(df['bc'].isin(df1.index))]
+
+mask = df.isin(['x1', 'x2'])
+df[mask] #булево
 
 #сортирую получившийся дф по шк в порядке убывания
 df2.sort_values(by=['bc'],ascending=False)
