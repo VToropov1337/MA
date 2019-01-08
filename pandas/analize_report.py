@@ -158,6 +158,13 @@ dft = df[df['producer'] == 'Procter And Gamble']
 #смотрим сколько в городе сетей и указываем их кол-во
 dft.groupby(['city','shop_title']).size()
 
+
+#аггрегирование
+df.groupby(by=grouping_columns)[columns_to_show].function()
+
+#вычисляем сумму по столбцу data1 в виде df [[]] 
+df.groupby(['key1','key2'])[['data1']].sum()
+
 #смотрим общую сумму товаров в каждом магазине
 dft.groupby(['city','shop_title'])['sku_title'].sum()
 
