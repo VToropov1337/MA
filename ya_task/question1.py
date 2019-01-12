@@ -29,3 +29,47 @@ df.head() #2
 df.groupby(['host'])['requests'].count().sort_values(ascending=False).#3
 df.groupby(['host'])['requests'].count().sort_values(ascending=False).head(15) #4 
 
+
+##############
+df['time'] = pd.to_datetime(df['timestamp'], format='%d/%b/%Y:%H:%M:%S')
+
+#дф с шагом 1 секунда
+r1 = DataFrame(pd.date_range(start='1995-07-01 00:00:00', end='1995-07-28 13:32:25',freq='S'))
+r1.columns=['date']
+
+
+#дф с кол-ом запросов в определенное время
+r2 = DataFrame(df.groupby('time')['time'].count())
+r2.index.name='date'
+r2.columns=['quantity']
+r2.reset_index(level=0, inplace=True)
+
+
+r3 = r1.merge(r2,how='outer')
+r3 = r3.fillna(0)
+
+df44 = r3.sort_values('date', ascending=True)
+
+df44['day'] = pd.DatetimeIndex(df44['date']).day
+
+df44.groupby('day')['quantity'].sum().plot(style='k--')
+
+df44.plot(x='date',y='quantity',grid=True,legend=False,sharey=True,rot=0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
