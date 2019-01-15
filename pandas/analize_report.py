@@ -279,6 +279,10 @@ df1 = df.assign(is_stm = np.where(df['sku'].str.contains('ALPRO'),1,0))
 #шк на 2
 df1 = df[df['bc'].apply(lambda x: str(x)[0] == '2')]
 
+
+#дф, где территория не входит в выборку~
+df[~df['territory'].isin(['Center'])]
+
 #указываю признаки (колонки) для форматирования и формат для них
 FORMATS = ["ШТРИХКОД", "Цена конкурента (без карты)", "Цена по карте клиента", "Цена по акции"]
 barcode_format = writer.book.add_format({'num_format': '0'})
