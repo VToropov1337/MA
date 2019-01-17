@@ -1,3 +1,9 @@
+
+'''start a mongo
+in shell enter: mongod
+'''
+
+
 import requests, json , pymongo
 from pymongo import MongoClient
 
