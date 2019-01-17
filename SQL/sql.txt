@@ -341,7 +341,7 @@ WHERE tasks.project_id = 2 \
 
 ======
 
-SELECT payment_transactions.id, description, info->'wave' as qwe, user_id,CONCAT_WS(' ',u.first_name,u.last_name) as name,payment_transactions.created_at, from_bucket, to_bucket,value 
+SELECT payment_transactions.id, description, info->'wave' as wave, user_id,CONCAT_WS(' ',u.first_name,u.last_name) as name,payment_transactions.created_at, from_bucket, to_bucket,value 
 FROM ma_metro.payment_transactions
 LEFT JOIN ma_metro.users u
 	ON payment_transactions.user_id = u.id
