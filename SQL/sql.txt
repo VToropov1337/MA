@@ -228,6 +228,7 @@ GROUP BY (u.id,d.platform,d.specs->'device',d.specs->'os')
 LIMIT 10;
 
 
+
 ======
 SELECT CASE
    WHEN category_id = 1 THEN 'гипермаркет'
@@ -351,3 +352,19 @@ ORDER BY payment_transactions.created_at;
 
 
 =======
+
+SELECT tasks.wave, geo_objects.title, geo_objects.id as GEO_OBJECT_ID, r2.id, r2.article_id, r2.metro_available, r2.state, articles.metro_title
+FROM ma_metro.reports
+LEFT JOIN ma_metro.reports r2
+	ON r2.origin_report_id = reports.id
+LEFT JOIN ma_metro.tasks
+	ON r2.task_id = tasks.id
+LEFT JOIN ma_metro.articles
+	ON r2.article_id = articles.id
+LEFT JOIN ma_metro.geo_objects
+	ON geo_objects.id = tasks.geo_object_id
+WHERE tasks.wave IN ('S6-19-2','S6-19-3','S6-19-3-Ryazan','S6-19-4','S6-18-41','S6-18-42','S6-18-43','S6-18-44','S6-18-45','S6-18-46','S6-18-47','S6-18-48','S6-18-49','S6-18-50')
+
+
+
+============
