@@ -368,3 +368,14 @@ WHERE tasks.wave IN ('S6-19-2','S6-19-3','S6-19-3-Ryazan','S6-19-4','S6-18-41','
 
 
 ============
+SELECT wave, r2.id as report_id, tasks.id as tasks_id,tasks.title,users.id,geo_object_id,geo_objects.title, r2.state, r2.metro_rejected_reason, r2.moderator_id FROM ma_metro.reports r2
+LEFT JOIN ma_metro.reports r1
+   ON r1.id = r2.origin_report_id
+LEFT JOIN ma_metro.tasks
+   ON tasks.id = r2.task_id
+JOIN ma_metro.users
+    ON users.id = r2.user_id
+JOIN ma_metro.geo_objects
+    ON geo_objects.id = tasks.geo_object_id
+WHERE r2.state != ‘accepted’ AND r2.state !=‘pending’
+AND tasks.wave IN (‘m54_0619_reg’,‘m54_0619_oif’,‘m54_0619_siberia’)
