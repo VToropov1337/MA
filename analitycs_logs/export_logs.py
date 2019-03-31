@@ -59,35 +59,5 @@ df['url'] = df['url'].replace('/xxx/gg/pop/rr/\d*/template.json','/template.json
 df['url'] = df['url'].replace('/xxx/gg/pop/rr/\d*/answers/\d*/media_files/.*/right.json','/media_files/right.json', regex=True)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-df['url'].value_counts(ascending=False).head(20) #самые популярные топ20
-df.groupby('date')['spent'].describe() #первый взгляд
+df['url'].value_counts(ascending=False).head(20) #
+df.groupby('date')['spent'].describe() 
