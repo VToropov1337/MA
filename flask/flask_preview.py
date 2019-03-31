@@ -21,6 +21,8 @@ cursor.execute("SELECT articles.id, articles.article_title, articles.price, geo_
     GROUP BY articles.id,geo_objects.title,article_title,articles.price \
     ORDER BY articles.id DESC;")
 
+cursor.execute("SELECT * FROM public.product")
+
 data = cursor.fetchall()
 
 
@@ -42,6 +44,7 @@ def home():
                 GROUP BY articles.id,geo_objects.title,article_title,articles.price \
                 ORDER BY articles.id DESC;")
 
+
             data = cursor.fetchall()
             return str(data)
         except Exception as x:
@@ -54,6 +57,7 @@ def home():
                 ON articles.geo_object_id = geo_objects.id \
                 GROUP BY articles.id,geo_objects.title,article_title,articles.price \
                 ORDER BY articles.id DESC;")
+
             data = cursor.fetchall()
             return str(data)
 
